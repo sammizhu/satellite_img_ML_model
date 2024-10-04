@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Read the CSV file into a DataFrame
-shrid = pd.read_csv("")
+shrid = pd.read_csv("/Users/sammizhu/SUPER/Mosaik_Shrid_coordinates_Data_Davide_Rahul_Ashesh_Leonard_2024 - Mosaik_Shrid_coordinates_Data_Davide_Rahul_Ashesh_Leonard_2024.csv")
 
 # Round and adjust the coordinates
 shrid["min_lat_round"] = shrid["min_lat"].round(2) + .005
@@ -52,7 +52,23 @@ id_count_list = np.hstack(id_count_list)
 # Create the final DataFrame with the generated grid coordinates
 df = pd.DataFrame({"Unnamed: 0": id_count_list, "shrid2": shrid_id_list, "Lon": lons_list, "Lat": lats_list}) 
 
-# Save the DataFrame to a CSV, formatting the output to 3 decimal places
-df["Lon"] = df["Lon"].round(3)
-df["Lat"] = df["Lat"].round(3)
-df.to_csv("file_coordinates.csv", index=False)
+# Restrict the number of rows per CSV file to a maximum of 100,000
+chunk_size = 100000
+total_rows = df.shape[0]
+num_chunks = (total_rows // chunk_size) + 1
+
+# Save the DataFrame to multiple CSV files if necessary
+for i in range(num_chunks):
+    start_row = i * chunk_size
+    end_row = min((i + 1) * chunk_size, total_rows)
+    
+    # Create a chunked DataFrame for the current file
+    chunk_df = df.iloc[start_row:end_row]
+    
+    # Create a unique filename for each chunk
+    chunk_filename = f"file_coordinates_{i+1}.csv"
+    
+    # Save the current chunk to a CSV file
+    chunk_df.to_csv(chunk_filename, index=False, float_format="%.3f")
+    
+    print(f"Saved {chunk_filename} with rows {start_row} to {end_row - 1}")
