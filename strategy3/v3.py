@@ -2,14 +2,19 @@ import pandas as pd
 import numpy as np
 from shapely.geometry import Polygon, Point
 
+def createPolygon(coordinates):
+    coordinates = eval(coordinates)
+    polygon_coords = [(float(x), float(y)) for x, y in coordinates]
+    return Polygon(polygon_coords)
+    
 # Read the CSV file into a DataFrame
-shrid = pd.read_csv("/Users/sammizhu/SUPER/Mosaik_Shrid_coordinates_Data_Davide_Rahul_Ashesh_Leonard_2024 - Mosaik_Shrid_coordinates_Data_Davide_Rahul_Ashesh_Leonard_2024.csv")
+file = pd.read_csv("/Users/sammizhu/SUPER/Mosaik_Shrid_coordinates_Data_Davide_Rahul_Ashesh_Leonard_2024 - Mosaik_Shrid_coordinates_Data_Davide_Rahul_Ashesh_Leonard_2024.csv")
 
 # Round and adjust the coordinates
-shrid["min_lat_round"] = shrid["min_lat"].round(2) + 0.005
-shrid["max_lat_round"] = shrid["max_lat"].round(2) - 0.005
-shrid["min_lon_round"] = shrid["min_lon"].round(2) + 0.005
-shrid["max_lon_round"] = shrid["max_lon"].round(2) - 0.005
+file["min_lat_round"] = file["min_lat"].round(2) + 0.005
+file["max_lat_round"] = file["max_lat"].round(2) - 0.005
+file["min_lon_round"] = file["min_lon"].round(2) + 0.005
+file["max_lon_round"] = file["max_lon"].round(2) - 0.005
 
 # Initialize lists to store the results
 lons_list = []
@@ -18,15 +23,9 @@ shrid_id_list = []
 id_count_list = []
 
 # Iterate over each row in the DataFrame to generate a grid of coordinates
-for i, row in shrid.iterrows():
-    # Define the polygon using min/max lat/lon of the current row
-    polygon_coords = [
-        (row["min_lon"], row["min_lat"]),
-        (row["max_lon"], row["min_lat"]),
-        (row["max_lon"], row["max_lat"]),
-        (row["min_lon"], row["max_lat"])
-    ]
-    polygon = Polygon(polygon_coords)  # Create a Shapely Polygon object
+for i, row in file.iterrows():
+
+    polygon = createPolygon(row["polygon_coordinates"])
 
     # Generate coordinate ranges
     x_range = np.arange(row["min_lon_round"], row["max_lon_round"] + 0.01, 0.01)
@@ -54,17 +53,17 @@ for i, row in shrid.iterrows():
         lats_list.append(valid_lats)
         shrid_id_list.append(shrid_id)
         id_count_list.append(id_count)
-
+        
 # Combine all individual lists into flat arrays
 lons_list = np.hstack(lons_list)
 lats_list = np.hstack(lats_list)
-shrid_id_list = np.hstack(shrid_id_list)
+file_id_list = np.hstack(shrid_id_list)
 id_count_list = np.hstack(id_count_list)
 
 # Create the final DataFrame with the generated grid coordinates
 df = pd.DataFrame({
     "Unnamed: 0": id_count_list,
-    "shrid2": shrid_id_list,
+    "file2": file_id_list,
     "Lon": lons_list,
     "Lat": lats_list
 })
