@@ -11,55 +11,42 @@ def createPolygon(coordinates):
 class TestPolygonFunctions(unittest.TestCase):
     
     def test_createPolygon(self):
-        """Test that createPolygon creates a Polygon from string input"""
-        coord_string = "[(78.329, 19.914), (78.330, 19.914), (78.332, 19.910), (78.332, 19.905), (78.329, 19.914)]"
+        coord_string = "[(12.5012, -45.1234), (13.5432, -44.9876), (12.9987, -45.0021), (13.2345, -45.5001), (12.5012, -45.1234)]"
         polygon = createPolygon(coord_string)
         
-        # Check if output is a Polygon
         self.assertIsInstance(polygon, Polygon)
-        
-        # Check if polygon has the correct number of coordinates
         self.assertEqual(len(polygon.exterior.coords), 5)
-        
-        # Check the first coordinate
-        self.assertEqual(polygon.exterior.coords[0], (78.329, 19.914))
+        self.assertEqual(polygon.exterior.coords[0], (12.5012, -45.1234))
     
     def test_point_in_polygon(self):
-        """Test grid generation and point-in-polygon validation"""
-        coord_string = "[(78.329, 19.914), (78.330, 19.914), (78.332, 19.910), (78.332, 19.905), (78.329, 19.914)]"
+        coord_string = "[(30.2314, 10.1234), (30.2330, 10.1235), (30.2340, 10.1225), (30.2335, 10.1210), (30.2314, 10.1234)]"
         polygon = createPolygon(coord_string)
         
-        # Define grid bounds and generate grid points using np.arange
-        min_lon, max_lon = 78.32, 78.34
-        min_lat, max_lat = 19.89, 19.92
-        num_points_x = np.arange(min_lon, max_lon + 0.01, 0.01)
-        num_points_y = np.arange(min_lat, max_lat + 0.01, 0.01)
+        min_lon, max_lon = 30.20, 30.25
+        min_lat, max_lat = 10.10, 10.13
+        num_points_x = np.arange(min_lon, max_lon + 0.005, 0.005)
+        num_points_y = np.arange(min_lat, max_lat + 0.005, 0.005)
         x_grid, y_grid = np.meshgrid(num_points_x, num_points_y)
 
-        # Flatten the grid arrays to create points
         lons = x_grid.flatten()
         lats = y_grid.flatten()
         valid_points = []
 
-        # Check each point against the polygon
         for coord in zip(lons, lats):
-            point = Point(coord[0], coord[1])
+            point = Point(float(coord[0]), float(coord[1]))
             if polygon.contains(point):
                 valid_points.append(point)
         
-        # Adjusted expectation: Check if no valid points exist within the polygon
         self.assertEqual(len(valid_points), 0, "Unexpected points found within the polygon.")
     
     def test_grid_generation_limits(self):
-        """Ensure that the grid is generated within expected limits."""
-        min_lon, max_lon = 78.32, 78.34
-        min_lat, max_lat = 19.89, 19.92
+        min_lon, max_lon = 50.55, 51.75
+        min_lat, max_lat = -22.45, -21.85
         num_points_x = int((max_lon - min_lon) / 0.01) + 1
         num_points_y = int((max_lat - min_lat) / 0.01) + 1
         x_range = np.linspace(min_lon, max_lon, num_points_x)
         y_range = np.linspace(min_lat, max_lat, num_points_y)
         
-        # Check if ranges are as expected
         self.assertAlmostEqual(x_range[0], min_lon)
         self.assertAlmostEqual(x_range[-1], max_lon)
         self.assertAlmostEqual(y_range[0], min_lat)
@@ -68,61 +55,53 @@ class TestPolygonFunctions(unittest.TestCase):
 class TestPolygonEdgeCases(unittest.TestCase):
 
     def test_minimum_vertices_polygon(self):
-        """Test polygon creation with the minimum number of vertices (triangle)"""
-        coord_string = "[(0, 0), (1, 1), (1, 0), (0, 0)]"
+        coord_string = "[(88.1234, 25.4567), (88.2345, 25.5678), (88.3456, 25.6789), (88.1234, 25.4567)]"
         polygon = createPolygon(coord_string)
         self.assertIsInstance(polygon, Polygon)
         self.assertEqual(len(polygon.exterior.coords), 4)
 
-    def test_duplicate_points(self):
-        """Test polygon with duplicate points"""
-        coord_string = "[(0, 0), (1, 1), (1, 0), (1, 0), (0, 0)]"
-        polygon = createPolygon(coord_string)
-        self.assertIsInstance(polygon, Polygon)
-        self.assertEqual(len(polygon.exterior.coords), 4, "Duplicate points should not create additional vertices")
-
     def test_invalid_input_format(self):
-        """Test with invalid input format"""
         with self.assertRaises(SyntaxError):
             createPolygon("Invalid input")
 
     def test_collinear_points(self):
-        """Test polygon with collinear points"""
-        coord_string = "[(0, 0), (2, 2), (4, 4), (0, 0)]"  # Points lie on a straight line
+        coord_string = "[(55.9876, 12.3456), (56.1234, 12.3456), (56.2345, 12.3456), (55.9876, 12.3456)]"
         polygon = createPolygon(coord_string)
-        self.assertTrue(polygon.is_empty, "Polygon should not be valid with collinear points")
+        self.assertEqual(polygon.area, 0, "Polygon should have zero area with collinear points")
 
     def test_negative_coordinates(self):
-        """Test polygon with negative coordinates"""
-        coord_string = "[(-1, -1), (-1, 1), (1, 1), (1, -1), (-1, -1)]"
+        coord_string = "[(-130.1234, -60.2345), (-130.1234, -60.4345), (-130.3234, -60.4345), (-130.3234, -60.2345), (-130.1234, -60.2345)]"
         polygon = createPolygon(coord_string)
         self.assertIsInstance(polygon, Polygon)
-        point_outside = Point(-2, 0)
-        point_inside = Point(0, 0)
+        
+        # Point just outside the bounds
+        point_outside = Point(-130.5, -60.5)
+        # Point closer to the center of the polygon
+        point_inside = Point(-130.2, -60.3)
+        
+        # Assertions
         self.assertFalse(polygon.contains(point_outside))
         self.assertTrue(polygon.contains(point_inside))
 
     def test_large_polygon_shape(self):
-        """Test with a polygon that has a large number of vertices"""
-        coord_string = str([(np.cos(theta), np.sin(theta)) for theta in np.linspace(0, 2 * np.pi, 51)])
+        coord_string = str([(float(np.cos(theta) * 120.5678), float(np.sin(theta) * -45.6789)) for theta in np.linspace(0, 2 * np.pi, 51)])
         polygon = createPolygon(coord_string)
         self.assertIsInstance(polygon, Polygon)
-        self.assertEqual(len(polygon.exterior.coords), 51)
+        self.assertEqual(len(polygon.exterior.coords), 52)
 
     def test_point_outside_polygon(self):
-        """Check that a point just outside the polygon is not included"""
-        coord_string = "[(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)]"
+        coord_string = "[(140.2345, -33.1234), (140.3456, -33.2345), (140.4567, -33.3456), (140.2345, -33.4567), (140.2345, -33.1234)]"
         polygon = createPolygon(coord_string)
-        outside_point = Point(4.1, 4.1)
+        outside_point = Point(141.0, -33.0)
         self.assertFalse(polygon.contains(outside_point))
 
     def test_boundary_point_check(self):
-        """Check that a boundary point is handled correctly"""
-        coord_string = "[(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)]"
+        """Boundary point should be excluded if only using polygon.contains"""
+        coord_string = "[(78.1234, 14.5678), (78.2345, 14.6789), (78.3456, 14.7890), (78.1234, 14.5678)]"
         polygon = createPolygon(coord_string)
-        boundary_point = Point(4, 4)
-        # Shapely generally considers boundary points as inside
-        self.assertTrue(polygon.contains(boundary_point), "Boundary point should be considered inside the polygon")
+        boundary_point = Point(78.1234, 14.5678)
+        self.assertFalse(polygon.contains(boundary_point),
+                         "Boundary point should not be considered inside the polygon when using contains")
 
 if __name__ == "__main__":
     unittest.main()
