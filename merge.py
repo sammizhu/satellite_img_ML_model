@@ -2,7 +2,7 @@ import pandas as pd
 
 df_a = pd.read_csv("")  # features output files
 df_b = pd.read_csv("")  # coordinate files with the lat, lon, and shird2
-output_file = "" #path name for file that you want to store it to
+output_file =  #path name for file that you want to store it to
 
 # Merge the files based on lat and lon columns
 merged_df = pd.merge(df_a, df_b, on=['Lat', 'Lon'], how='inner')
