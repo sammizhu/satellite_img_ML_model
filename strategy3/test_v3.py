@@ -65,5 +65,64 @@ class TestPolygonFunctions(unittest.TestCase):
         self.assertAlmostEqual(y_range[0], min_lat)
         self.assertAlmostEqual(y_range[-1], max_lat)
 
+class TestPolygonEdgeCases(unittest.TestCase):
+
+    def test_minimum_vertices_polygon(self):
+        """Test polygon creation with the minimum number of vertices (triangle)"""
+        coord_string = "[(0, 0), (1, 1), (1, 0), (0, 0)]"
+        polygon = createPolygon(coord_string)
+        self.assertIsInstance(polygon, Polygon)
+        self.assertEqual(len(polygon.exterior.coords), 4)
+
+    def test_duplicate_points(self):
+        """Test polygon with duplicate points"""
+        coord_string = "[(0, 0), (1, 1), (1, 0), (1, 0), (0, 0)]"
+        polygon = createPolygon(coord_string)
+        self.assertIsInstance(polygon, Polygon)
+        self.assertEqual(len(polygon.exterior.coords), 4, "Duplicate points should not create additional vertices")
+
+    def test_invalid_input_format(self):
+        """Test with invalid input format"""
+        with self.assertRaises(SyntaxError):
+            createPolygon("Invalid input")
+
+    def test_collinear_points(self):
+        """Test polygon with collinear points"""
+        coord_string = "[(0, 0), (2, 2), (4, 4), (0, 0)]"  # Points lie on a straight line
+        polygon = createPolygon(coord_string)
+        self.assertTrue(polygon.is_empty, "Polygon should not be valid with collinear points")
+
+    def test_negative_coordinates(self):
+        """Test polygon with negative coordinates"""
+        coord_string = "[(-1, -1), (-1, 1), (1, 1), (1, -1), (-1, -1)]"
+        polygon = createPolygon(coord_string)
+        self.assertIsInstance(polygon, Polygon)
+        point_outside = Point(-2, 0)
+        point_inside = Point(0, 0)
+        self.assertFalse(polygon.contains(point_outside))
+        self.assertTrue(polygon.contains(point_inside))
+
+    def test_large_polygon_shape(self):
+        """Test with a polygon that has a large number of vertices"""
+        coord_string = str([(np.cos(theta), np.sin(theta)) for theta in np.linspace(0, 2 * np.pi, 51)])
+        polygon = createPolygon(coord_string)
+        self.assertIsInstance(polygon, Polygon)
+        self.assertEqual(len(polygon.exterior.coords), 51)
+
+    def test_point_outside_polygon(self):
+        """Check that a point just outside the polygon is not included"""
+        coord_string = "[(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)]"
+        polygon = createPolygon(coord_string)
+        outside_point = Point(4.1, 4.1)
+        self.assertFalse(polygon.contains(outside_point))
+
+    def test_boundary_point_check(self):
+        """Check that a boundary point is handled correctly"""
+        coord_string = "[(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)]"
+        polygon = createPolygon(coord_string)
+        boundary_point = Point(4, 4)
+        # Shapely generally considers boundary points as inside
+        self.assertTrue(polygon.contains(boundary_point), "Boundary point should be considered inside the polygon")
+
 if __name__ == "__main__":
     unittest.main()
