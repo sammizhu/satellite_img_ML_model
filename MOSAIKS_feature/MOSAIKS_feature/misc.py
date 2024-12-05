@@ -1,6 +1,5 @@
 import pandas as pd
 
-# DuplicateCheck Class
 class DuplicateCheck:
     @staticmethod
     def check_duplicates(file_path, subset_columns):
@@ -13,7 +12,6 @@ class DuplicateCheck:
         except Exception as e:
             print(f"Error checking duplicates: {e}")
 
-# Merge Class
 class Merge:
     @staticmethod
     def merge_files(file_a, file_b, on_columns, output_file):
@@ -26,7 +24,6 @@ class Merge:
         except Exception as e:
             print(f"Error merging files: {e}")
 
-# Subset Class
 class Subset:
     @staticmethod
     def fetch_and_save_first_n_rows(input_csv_file_path, output_csv_file_path, n=100):
@@ -37,7 +34,6 @@ class Subset:
         except Exception as e:
             print(f"Error saving first {n} rows: {e}")
 
-# Unique Class
 class Unique:
     @staticmethod
     def count_distinct_rows(file_path, subset_columns):

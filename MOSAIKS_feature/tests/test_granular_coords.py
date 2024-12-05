@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 from shapely.geometry import Polygon, Point
-from MOSAIKS_feature.granular_coords import PolygonGridGenerator  # Adjust the import path as needed
+from MOSAIKS_feature.granular_coords import PolygonGridGenerator
 
 class TestPolygonGridGenerator(unittest.TestCase):
 
