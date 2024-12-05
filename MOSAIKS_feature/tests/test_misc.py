@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 import pandas as pd
 from io import StringIO
-from MOSAIKS_feature.misc import DuplicateCheck, Merge, Subset, Unique  # Replace `your_script_name` with the filename
+from MOSAIKS_feature.misc import DuplicateCheck, Merge, Subset, Unique 
 
 
 class TestCSVOperations(unittest.TestCase):
