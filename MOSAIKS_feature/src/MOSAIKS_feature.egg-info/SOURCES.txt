@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+src/MOSAIKS_feature/__init__.py
+src/MOSAIKS_feature/aggregate_features.py
+src/MOSAIKS_feature/granular_coords.py
+src/MOSAIKS_feature/misc.py
+src/MOSAIKS_feature/strategy_two.py
+src/MOSAIKS_feature.egg-info/PKG-INFO
+src/MOSAIKS_feature.egg-info/SOURCES.txt
+src/MOSAIKS_feature.egg-info/dependency_links.txt
+src/MOSAIKS_feature.egg-info/top_level.txt
+tests/test_aggregate_features.py
+tests/test_granular_coords.py
+tests/test_misc.py
+tests/test_strategy_two.py

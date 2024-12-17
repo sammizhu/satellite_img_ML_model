@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: MOSAIKS_feature
+Version: 0.0.1
+Summary: Analysis code replication for MOSAIKS image feature detection
+Home-page: https://github.com/sammizhu/satellite_img_ML_model
+Author: Sammi Zhu
+Author-email: Sammi Zhu <sammizhu@college.harvard.edu>, Leonard Mushunje <lm3748@columbia.edu>
+Project-URL: Homepage, https://github.com/sammizhu/satellite_img_ML_model
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+tests ran just going to tests/ and then runing pytest. check to ensure environment var
+set to right path if running into issues 

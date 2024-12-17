@@ -1,0 +1,18 @@
+[project]
+name = "MOSAIKS_feature"
+version = "0.0.2"
+authors = [
+  { name="Sammi Zhu", email="sammizhu@college.harvard.edu" },
+  { name="Leonard Mushunje", email="lm3748@columbia.edu" },
+]
+description = "Analysis code replication for MOSAIKS image feature detection"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/sammizhu/satellite_img_ML_model"

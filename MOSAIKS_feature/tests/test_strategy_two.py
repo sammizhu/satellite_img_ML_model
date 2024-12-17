@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from shapely.geometry import Polygon
 from io import StringIO
-from MOSAIKS_feature.strategy_two import compute_bounding_box, process_shrid_bounding_boxes, parse_polygon, visualize_boundary_boxes
+from src.MOSAIKS_feature.strategy_two import compute_bounding_box, process_shrid_bounding_boxes, parse_polygon, visualize_boundary_boxes
 
 class TestBoundingBoxFunctions(unittest.TestCase):
     def setUp(self):
