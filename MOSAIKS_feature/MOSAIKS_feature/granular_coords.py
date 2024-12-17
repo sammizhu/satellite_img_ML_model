@@ -68,6 +68,52 @@ class PolygonGridGenerator:
             "Lat": np.hstack(lats_list)
         })
 
+    def generate_grid_no_polygon(self):
+        # Round and adjust the coordinates
+        self.csv_file["min_lat_round"] = self.csv_file["min_lat"].round(2) + .005
+        self.csv_file["max_lat_round"] = self.csv_file["max_lat"].round(2) - .005
+        self.csv_file["min_lon_round"] = self.csv_file["min_lon"].round(2) + .005
+        self.csv_file["max_lon_round"] = self.csv_file["max_lon"].round(2) - .005
+
+        # Initialize lists to store the results
+        lons_list = []
+        lats_list = []
+        shrid_id_list = []
+        id_count_list = []
+
+        # Iterate over each row in the DataFrame to generate a grid of coordinates
+        for i, row in self.csv_file.iterrows():
+            x_range = np.arange(row["min_lon_round"], row["max_lon_round"] + 0.01, 0.01)
+            y_range = np.arange(row["min_lat_round"], row["max_lat_round"] + 0.01, 0.01)
+            x_grid, y_grid = np.meshgrid(x_range, y_range)
+
+            lons = x_grid.flatten()
+            lats = y_grid.flatten()
+
+            # Filter both lons and lats based on the current row's min/max bounds
+            # Ensures no out-of-bound region errors 
+            valid_indices = (lons >= row["min_lon"]) & (lons <= row["max_lon"]) & \
+                            (lats >= row["min_lat"]) & (lats <= row["max_lat"])
+            
+            lons_filtered = lons[valid_indices]
+            lats_filtered = lats[valid_indices]
+
+            # If filtered arrays are not empty, append the corresponding shrid2 values
+            if len(lons_filtered) > 0 and len(lats_filtered) > 0:
+                shrid_id = np.full(len(lons_filtered), row["shrid2"])
+                id_count = np.full(len(lons_filtered), row["Unnamed: 0"])
+
+                lons_list.append(lons_filtered)
+                lats_list.append(lats_filtered)
+                shrid_id_list.append(shrid_id)
+                id_count_list.append(id_count)
+
+        # Combine all the individual lists into single flat arrays
+        lons_list = np.hstack(lons_list)
+        lats_list = np.hstack(lats_list)
+        shrid_id_list = np.hstack(shrid_id_list)
+        id_count_list = np.hstack(id_count_list)
+
     def save_to_csv(self, chunk_size=100000):
         """Save the resulting DataFrame to one or more CSV files."""
         total_rows = self.result_df.shape[0]
