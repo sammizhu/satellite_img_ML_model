@@ -14,3 +14,4 @@ merged_df = merged_df[columns]
 # Save the merged data to the output file
 merged_df.to_csv(output_file, index=False)
 print(f"Successfully merged and saved to {output_file}")
+
