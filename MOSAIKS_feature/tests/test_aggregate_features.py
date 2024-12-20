@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 import os
 from io import StringIO
-from src.MOSAIKS_feature.aggregate_features import aggregateFeatures 
+from src.MOSAIKS_feature.testing.aggregate_features_functional import aggregateFeatures 
 
 class TestFeatureAverager(unittest.TestCase):
 

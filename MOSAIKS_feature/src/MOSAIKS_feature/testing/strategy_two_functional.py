@@ -16,43 +16,30 @@ import geopandas as gpd
 import matplotlib.patches as patches
 from shapely.geometry import Polygon, Point, box
 
-## Compute Boundary Boxes
-
 def compute_bounding_box(polygon):
+    """Takes a polygon and returns its bounding box coordinates."""
     minx, miny, maxx, maxy = polygon.bounds
     return miny, maxy, minx, maxx  # Returning (min lat, max lat, min lon, max lon)
     
     
 def process_shrid_bounding_boxes(csv_file):
-    # Load the CSV file
+    """Processes a CSV file of polygons, calculates bounding boxes and centroids, and saves them."""
     df = pd.read_csv(csv_file)
-    
-    # Initialize lists to store bounding box results
     min_lats = []
     max_lats = []
     min_lons = []
     max_lons = []
     centroids = []
     
-    
     for index, row in df.iterrows():
         polygon = Polygon(eval(row['polygon_coordinates']))
-        
-        # Compute the bounding box
         min_lat, max_lat, min_lon, max_lon = compute_bounding_box(polygon)
-        
-        # Store the results
         min_lats.append(min_lat)
         max_lats.append(max_lat)
         min_lons.append(min_lon)
         max_lons.append(max_lon)
-         
-        # Calculate and Save centroid data
         centroids.append((polygon.centroid.x, polygon.centroid.y)) 
    
-
-    
-    # Add results to the dataframe
     df['min_lat'] = min_lats
     df['max_lat'] = max_lats
     df['min_lon'] = min_lons
@@ -60,8 +47,6 @@ def process_shrid_bounding_boxes(csv_file):
     df['centroid_x'] = [centroid[0] for centroid in centroids]
     df['centroid_y'] = [centroid[1] for centroid in centroids]
 
-    
-    # Save results to a new CSV file
     output_file = "shrid_bounding_boxes_for_mosaiks.csv"
     df.to_csv(output_file, index=False)
     
@@ -69,51 +54,37 @@ def process_shrid_bounding_boxes(csv_file):
 
 ## Visualizing Boundary Boxes
 
-# Function to convert polygon coordinates to a shapely Polygon object
 def parse_polygon(polygon_string):
+    """Converts a string of polygon coordinates into a Polygon object."""
     coordinates = eval(polygon_string)
     return Polygon(coordinates)
 
 def visualize_boundary_boxes(csv_file_path):
+    """Visualizes polygons along with their bounding boxes and centroids."""
     shrid_data = pd.read_csv(csv_file_path)
-
-# Convert polygon coordinates into shapely objects
     shrid_data['geometry'] = shrid_data['polygon_coordinates'].apply(parse_polygon)
-
-    # Create a GeoDataFrame
     gdf = gpd.GeoDataFrame(shrid_data, geometry='geometry')
 
-    # Function to create a bounding box Polygon from min/max lat/lon
     def create_bbox(minx, miny, maxx, maxy):
+        """Creates a bounding box polygon from given coordinates."""
         return box(minx, miny, maxx, maxy)
 
-    # Apply the function to create bounding boxes
     gdf['bbox'] = gdf.apply(lambda row: create_bbox(row['min_lon'], row['min_lat'], row['max_lon'], row['max_lat']), axis=1)
-
-    # Select any 10 shrid polygons for visualization
     gdf_sample = gdf.sample(10)
 
-    # Plot each polygon with its bounding box and centroid separately
     for index, row in gdf_sample.iterrows():
-        fig, ax = plt.subplots(figsize=(10, 10))  # Adjust the figure size as needed
-
-        # Plot the polygon
+        fig, ax = plt.subplots(figsize=(10, 10))
         gdf_single = gpd.GeoDataFrame([row], geometry='geometry')
         gdf_single.plot(ax=ax, edgecolor='blue', facecolor='orange', linewidth=3)
 
-        # Plot the bounding box
         gdf_bbox = gpd.GeoDataFrame([row], geometry='bbox')
         gdf_bbox.plot(ax=ax, edgecolor='green', facecolor='none', linewidth=2, linestyle='--')
 
-        # Plot the centroid (provided in the CSV file)
         ax.plot(row['centroid_x'], row['centroid_y'], 'ro', markersize=10, label='Centroid')
 
-        # Customize plot appearance
         plt.title(f'shrid: {row["shrid2"]}', fontsize=16)
         plt.xlabel('Longitude', fontsize=12)
         plt.ylabel('Latitude', fontsize=12)
-        ax.set_aspect('equal')  # Keep the aspect ratio of the plot equal
+        ax.set_aspect('equal')
         ax.legend()
-
-        # Show the plot
         plt.show()

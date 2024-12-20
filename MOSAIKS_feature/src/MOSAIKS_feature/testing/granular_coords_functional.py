@@ -69,6 +69,7 @@ class PolygonGridGenerator:
         })
 
     def generate_grid_no_polygon(self):
+        """Generate coordinate grids without comparing with polygon coordinate"""
         # Round and adjust the coordinates
         self.csv_file["min_lat_round"] = self.csv_file["min_lat"].round(2) + .005
         self.csv_file["max_lat_round"] = self.csv_file["max_lat"].round(2) - .005

@@ -3,16 +3,16 @@ import pandas as pd
 import os
 from shapely.geometry import Polygon
 from io import StringIO
-from src.MOSAIKS_feature.strategy_two import compute_bounding_box, process_shrid_bounding_boxes, parse_polygon, visualize_boundary_boxes
+from src.MOSAIKS_feature.testing.strategy_two_functional import compute_bounding_box, process_shrid_bounding_boxes, parse_polygon, visualize_boundary_boxes
 
 class TestBoundingBoxFunctions(unittest.TestCase):
     def setUp(self):
         # Sample polygon CSV content for testing
         self.sample_csv = StringIO("""
-shrid2,polygon_coordinates
-1,"[(0,0), (0,2), (2,2), (2,0)]"
-2,"[(1,1), (1,3), (3,3), (3,1)]"
-""")
+        shrid2,polygon_coordinates
+        1,"[(0,0), (0,2), (2,2), (2,0)]"
+        2,"[(1,1), (1,3), (3,3), (3,1)]"
+        """)
         self.sample_df = pd.read_csv(self.sample_csv)
 
     def test_compute_bounding_box(self):

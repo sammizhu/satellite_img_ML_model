@@ -1,6 +1,6 @@
 [project]
 name = "MOSAIKS_feature"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Sammi Zhu", email="sammizhu@college.harvard.edu" },
   { name="Leonard Mushunje", email="lm3748@columbia.edu" },
