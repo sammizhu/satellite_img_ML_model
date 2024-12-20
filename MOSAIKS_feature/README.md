@@ -138,3 +138,7 @@ aggregate(file_path)
 **Note:**
     - Ensure that file_path points to the files downloaded in Step 2.
     - Important: Do not use the same file path as the one used in Step 1.
+
+### MOSAIKS Analysis
+
+Further analysis can be done via the files in `analysis` directory. Be sure to import the functions similar to how it is demoed above. 
